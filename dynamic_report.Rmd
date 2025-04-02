@@ -5,23 +5,51 @@ output: html_fragment
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
-
+library(tidyverse)
 ```
 
-```{css}
+## Analyzing YouTube Ads and Viewer Interest
 
+This report analyzes YouTube advertisements based on user observations. It tracks the number of ads seen, their types, and whether they interested viewers.
+
+```{r data_import}
+# Import data from Google Sheets
+logged_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTjWcTc323INPV1cOxnEVqo7tMfDb6261ivV90QYsxdFEDGJNsgQJQRBpdnkhIT4H4YhhN-iCwJ0aRI/pub?output=csv")
+
+# Rename columns for better readability
+latest_data <- logged_data %>%
+  rename(
+    ads_seen = `How many ads did you see on a recent youtube video you have just watched?`,  
+    ad_type = `What type of ads did you see?`,  
+    interest_level = `Did these ads interest you in any way?`  
+  )
+
+# Calculate summary statistics
+min_ads <- min(latest_data$ads_seen, na.rm = TRUE)
+max_ads <- max(latest_data$ads_seen, na.rm = TRUE)
+avg_ads <- mean(latest_data$ads_seen, na.rm = TRUE)
 ```
 
-## What's going on with this data?
+### Summary of Ads Observed
 
-You need to change the contents of this Rmd! Replace the R code and markdown give below in this template document.
+- The minimum number of ads seen: `r min_ads`
+- The maximum number of ads seen: `r max_ads`
+- The average number of ads seen per observation: `r round(avg_ads, 2)`
 
-```{r}
-pets <- c("cat", "dog", "turtle", "rabbit")
-best_pet <- pets[1]
-
+```{r ad_type_plot}
+# Bar chart for most common ad types
+ggplot(latest_data, aes(x = ad_type)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Most Common Ad Types", x = "Ad Type", y = "Count") +
+  theme_minimal()
 ```
 
-The best pet to have is a `r best_pet` of course!
+```{r interest_level_plot}
+# Bar chart for interest level in ads
+ggplot(latest_data, aes(x = interest_level)) +
+  geom_bar(fill = "darkred") +
+  labs(title = "Viewer Interest in Ads", x = "Interest Level", y = "Count") +
+  theme_minimal()
+```
 
 ![](https://c.tenor.com/-qBsG1HwR4oAAAAC/tenor.gif)
